@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValue } from 'framer-motion';
-import { Leaf, Menu, X, ShoppingCart, CheckCircle, Heart, Star, Sprout, Maximize, Volume2, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
+import { Leaf, Menu, X, ShoppingCart, CheckCircle, Heart, Star, Sprout, Maximize, Volume2, VolumeX, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
 
 const products = [
   { id: 1, name: 'Premium Sona Masuri Rice', shortDesc: 'Sona Masuri, Basmati & more', desc: 'Aged for 12 months, unpolished and organically grown without pesticides. Perfect for daily meals and traditional Indian recipes. Contains high fiber and essential nutrients.', price: 180, unit: '/ kg', img: '/images/rice_img_1778906211414.png' },
@@ -46,47 +46,28 @@ const CustomCursor = () => {
   if (isTouch) return null;
 
   return (
-    <>
-      <motion.div
-        className="fixed top-0 left-0 w-3 h-3 bg-[#D8A031] rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        animate={{ x: mousePosition.x - 6, y: mousePosition.y - 6, scale: isHovering ? 2.5 : 1 }}
-        transition={{ type: "spring", stiffness: 600, damping: 30, mass: 0.5 }}
-      />
-      <motion.div
-        className="fixed top-0 left-0 w-10 h-10 border border-[#D8A031]/50 rounded-full pointer-events-none z-[9998]"
-        animate={{ x: mousePosition.x - 20, y: mousePosition.y - 20, scale: isHovering ? 1.5 : 1 }}
-        transition={{ type: "spring", stiffness: 250, damping: 20, mass: 0.8 }}
-      />
-    </>
+    <motion.div
+      className="fixed top-0 left-0 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
+      animate={{ 
+        x: mousePosition.x - (isHovering ? 24 : 8), 
+        y: mousePosition.y - (isHovering ? 24 : 8),
+        width: isHovering ? 48 : 16,
+        height: isHovering ? 48 : 16,
+        opacity: isHovering ? 0.8 : 1
+      }}
+      transition={{ type: "tween", ease: "backOut", duration: 0.15 }}
+    />
   );
 };
 
-// --- 3D Tilt Card Component ---
+// --- Hover Card Component ---
 const TiltCard = ({ children, onClick, className = "" }: { children: React.ReactNode, onClick?: () => void, className?: string }) => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [15, -15]);
-  const rotateY = useTransform(x, [-100, 100], [-15, 15]);
-
-  function handleMouse(event: React.MouseEvent<HTMLDivElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    x.set(event.clientX - rect.left - rect.width / 2);
-    y.set(event.clientY - rect.top - rect.height / 2);
-  }
-
-  function handleMouseLeave() {
-    x.set(0);
-    y.set(0);
-  }
-
   return (
     <motion.div
-      style={{ rotateX, rotateY, perspective: 1200 }}
-      onMouseMove={handleMouse}
-      onMouseLeave={handleMouseLeave}
       onClick={onClick}
       className={`cursor-pointer transition-shadow duration-300 ${className}`}
-      whileHover={{ scale: 1.02, zIndex: 10, boxShadow: "0 25px 50px -12px rgba(30, 58, 43, 0.25)" }}
+      whileHover={{ scale: 1.03, y: -5, zIndex: 10, boxShadow: "0 25px 50px -12px rgba(30, 58, 43, 0.25)" }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       {children}
     </motion.div>
@@ -106,6 +87,7 @@ function App() {
 
   // Cart State
   const [cartItems, setCartItems] = useState<any[]>([]);
+  const [isMuted, setIsMuted] = useState(true);
 
   // Video Ref
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -130,10 +112,19 @@ function App() {
       if (videoRef.current) {
         videoRef.current.muted = false;
         videoRef.current.volume = 0.15; // Low volume so it doesn't disturb
+        setIsMuted(false);
         videoRef.current.play().catch(e => console.log("Video play error:", e));
       }
     } catch (err) {
       console.log("Fullscreen blocked by browser", err);
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      const newState = !isMuted;
+      videoRef.current.muted = newState;
+      setIsMuted(newState);
     }
   };
 
@@ -307,6 +298,17 @@ function App() {
         </div>
 
         <div className="container relative z-10 px-4 md:px-8 text-center pt-20">
+          {/* Mute/Unmute Toggle */}
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={toggleMute}
+            className="absolute bottom-8 right-8 md:bottom-12 md:right-12 z-20 p-3 md:p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all group"
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? <VolumeX className="w-5 h-5 md:w-6 md:h-6" /> : <Volume2 className="w-5 h-5 md:w-6 md:h-6" />}
+          </motion.button>
+
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
