@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  
+  --color-forest: #1E3A2B;
+  --color-beige: #F5E9D7;
+  --color-turmeric: #D8A031;
+  --color-brown: #5A3E2B;
+  --color-offwhite: #FAF7F2;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans bg-offwhite text-forest antialiased overflow-x-hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/20 backdrop-blur-md border border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.05)];
+  }
+  .glass-dark {
+    @apply bg-forest/20 backdrop-blur-md border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-lg border border-white/40 shadow-[0_8px_32px_rgba(30,58,43,0.08)];
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-offwhite);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-forest);
+  border-radius: 5px;
+}
+
+/* Hide scrollbar for clean horizontal scrolls if needed */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
