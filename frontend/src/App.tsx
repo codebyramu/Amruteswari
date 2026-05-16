@@ -2,14 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Leaf, Menu, X, ShoppingCart, CheckCircle, Maximize, Volume2, VolumeX, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
 
-const products = [
-  { id: 1, name: 'Premium Sona Masuri Rice', shortDesc: 'Sona Masuri, Basmati & more', desc: 'Aged for 12 months, unpolished and organically grown without pesticides. Perfect for daily meals and traditional Indian recipes. Contains high fiber and essential nutrients.', price: 180, unit: '/ kg', img: '/images/rice_img_1778906211414.png' },
-  { id: 2, name: 'Cold Pressed Sesame Oil', shortDesc: 'Pure Sesame, Peanut & Coconut Oil', desc: 'Traditional wooden cold-pressed (Mara Chekku) sesame oil. Retains all natural nutrients, antioxidants, and original authentic aroma for healthy cooking.', price: 450, unit: '/ Litre', img: '/images/oil_img_1778906243116.png' },
-  { id: 3, name: 'Organic Turmeric Powder', shortDesc: 'High curcumin, naturally grown', desc: 'High curcumin content Manjal Podi. Sun-dried and traditionally ground for maximum health benefits. Known for its anti-inflammatory properties.', price: 120, unit: '/ 250g', img: '/images/turmeric_img_1778906262796.png' },
-  { id: 4, name: 'Stone Ground Chilli Powder', shortDesc: 'Sun-dried, traditional stone ground', desc: 'Authentic Guntur Milagai powder. Sun-dried and stone ground to preserve natural essential oils and traditional heat. No artificial colors added.', price: 160, unit: '/ 250g', img: '/images/chilli_img_1778906277998.png' },
-  { id: 5, name: 'Whole Premium Cashews', shortDesc: 'Handpicked, whole cashew nuts', desc: 'W320 grade premium Kaju. Handpicked from traditional farms, completely natural without any chemical processing or artificial bleaching.', price: 350, unit: '/ 250g', img: '/images/rice_img_1778906211414.png' },
-  { id: 6, name: 'Unpolished Toor Dal', shortDesc: 'Unpolished, rich in protein', desc: 'Rich in plant-based protein and natural dietary fiber. Sourced directly from our traditional farmers and left unpolished to retain maximum nutrition.', price: 190, unit: '/ kg', img: '/images/turmeric_img_1778906262796.png' }
-];
 
 // --- Custom Cursor Component ---
 const CustomCursor = () => {
@@ -65,6 +57,14 @@ const TiltCard = ({ children, onClick, className = "" }: { children: React.React
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/products.json')
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(err => console.error("Error loading products:", err));
+  }, []);
 
   // Modals & Prompts
   const [showWelcome, setShowWelcome] = useState(true);
@@ -358,7 +358,7 @@ function App() {
                 <TiltCard onClick={() => setSelectedProduct(product)} className="glass-card rounded-3xl overflow-hidden group bg-white/60">
                   <div className="relative h-56 md:h-64 overflow-hidden">
                     <img
-                      src={product.img}
+                      src={product.imageSource}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -368,7 +368,7 @@ function App() {
                   </div>
                   <div className="p-6 md:p-8 flex flex-col h-[calc(100%-14rem)] md:h-[calc(100%-16rem)]">
                     <h3 className="text-2xl md:text-3xl font-serif text-[#1E3A2B] mb-2 leading-tight">{product.name}</h3>
-                    <p className="text-[#5A3E2B]/80 text-sm md:text-base mb-6 flex-1 line-clamp-2">{product.shortDesc}</p>
+                    <p className="text-[#5A3E2B]/80 text-sm md:text-base mb-6 flex-1 line-clamp-2">{product.tamilName} - {product.category}</p>
 
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#1E3A2B]/10">
                       <div className="flex items-baseline gap-1">
@@ -411,19 +411,19 @@ function App() {
               </button>
 
               <div className="w-full md:w-1/2 h-64 md:h-auto relative">
-                <img src={selectedProduct.img} alt={selectedProduct.name} className="w-full h-full object-cover" />
+                <img src={selectedProduct.imageSource} alt={selectedProduct.name} className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-[#FAF7F2] to-transparent md:hidden"></div>
               </div>
 
               <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col">
                 <span className="text-[#D8A031] font-bold tracking-wider text-sm mb-2 uppercase">Premium Quality</span>
-                <h2 className="text-3xl md:text-5xl font-serif text-[#1E3A2B] mb-4 leading-tight">{selectedProduct.name}</h2>
+                <h2 className="text-3xl md:text-5xl font-serif text-[#1E3A2B] mb-4 leading-tight">{selectedProduct.name} <span className="text-xl text-[#5A3E2B]/60 block">{selectedProduct.tamilName}</span></h2>
                 <div className="flex items-baseline gap-2 mb-6 pb-6 border-b border-[#1E3A2B]/10">
                   <span className="text-4xl font-bold text-[#1E3A2B]">₹{selectedProduct.price}</span>
-                  <span className="text-lg text-[#5A3E2B]">{selectedProduct.unit}</span>
+                  <span className="text-lg text-[#5A3E2B]">/ {selectedProduct.unit}</span>
                 </div>
                 <p className="text-[#5A3E2B] leading-relaxed text-lg mb-8 flex-1">
-                  {selectedProduct.desc}
+                  {selectedProduct.description}
                 </p>
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]" /> Organic</div>
@@ -477,11 +477,11 @@ function App() {
                 ) : (
                   cartItems.map(item => (
                     <motion.div layout key={item.id} className="flex gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#1E3A2B]/5">
-                      <img src={item.img} alt={item.name} className="w-20 h-20 object-cover rounded-xl" />
+                      <img src={item.imageSource} alt={item.name} className="w-20 h-20 object-cover rounded-xl" />
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
                           <h4 className="font-serif font-bold text-[#1E3A2B] leading-tight mb-1">{item.name}</h4>
-                          <p className="text-sm text-[#5A3E2B] font-medium">₹{item.price} {item.unit}</p>
+                          <p className="text-sm text-[#5A3E2B] font-medium">₹{item.price} / {item.unit}</p>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center gap-3 bg-[#FAF7F2] rounded-lg px-2 py-1">
