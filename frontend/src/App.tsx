@@ -61,14 +61,32 @@ const CustomCursor = () => {
   );
 };
 
-// --- Hover Card Component ---
+// --- 3D Tilt Card Component ---
 const TiltCard = ({ children, onClick, className = "" }: { children: React.ReactNode, onClick?: () => void, className?: string }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-100, 100], [15, -15]);
+  const rotateY = useTransform(x, [-100, 100], [-15, 15]);
+
+  function handleMouse(event: React.MouseEvent<HTMLDivElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    x.set(event.clientX - rect.left - rect.width / 2);
+    y.set(event.clientY - rect.top - rect.height / 2);
+  }
+
+  function handleMouseLeave() {
+    x.set(0);
+    y.set(0);
+  }
+
   return (
     <motion.div
+      style={{ rotateX, rotateY, perspective: 1200 }}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleMouseLeave}
       onClick={onClick}
       className={`cursor-pointer transition-shadow duration-300 ${className}`}
-      whileHover={{ scale: 1.03, y: -5, zIndex: 10, boxShadow: "0 25px 50px -12px rgba(30, 58, 43, 0.25)" }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      whileHover={{ scale: 1.02, zIndex: 10, boxShadow: "0 25px 50px -12px rgba(30, 58, 43, 0.25)" }}
     >
       {children}
     </motion.div>
@@ -79,13 +97,13 @@ const TiltCard = ({ children, onClick, className = "" }: { children: React.React
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
+
   // Modals & Prompts
   const [showWelcome, setShowWelcome] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
-  
+
   // Cart State
   const [cartItems, setCartItems] = useState<any[]>([]);
 
@@ -157,11 +175,11 @@ function App() {
       {/* Welcome / Fullscreen Prompt */}
       <AnimatePresence>
         {showWelcome && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-[#1E3A2B]/90 backdrop-blur-xl px-4"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
               className="bg-[#FAF7F2] p-8 md:p-12 rounded-3xl max-w-lg w-full text-center shadow-2xl relative overflow-hidden"
             >
@@ -172,15 +190,15 @@ function App() {
                 For the best cinematic and immersive experience, we recommend entering full-screen mode with sound enabled.
               </p>
               <div className="flex flex-col gap-4">
-                <button 
+                <button
                   onClick={handleExperience}
                   className="flex items-center justify-center gap-2 bg-[#1E3A2B] text-white py-4 px-6 rounded-full font-medium hover:bg-[#D8A031] hover:text-[#1E3A2B] transition-all group"
                 >
-                  <Maximize className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                  <Maximize className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   <Volume2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   Enter Full Experience
                 </button>
-                <button 
+                <button
                   onClick={skipExperience}
                   className="text-[#5A3E2B] font-medium hover:text-[#1E3A2B] transition-colors py-2"
                 >
@@ -214,7 +232,7 @@ function App() {
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
-              <button 
+              <button
                 onClick={() => setIsCartOpen(true)}
                 className={`relative flex items-center justify-center p-2.5 rounded-full transition-all ${isScrolled ? 'bg-[#1E3A2B]/10 text-[#1E3A2B] hover:bg-[#D8A031] hover:text-[#1E3A2B]' : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30'}`}
               >
@@ -238,7 +256,7 @@ function App() {
       <AnimatePresence>
         {isMenuOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 bg-[#1E3A2B]/60 backdrop-blur-sm z-50 md:hidden"
               onClick={() => setIsMenuOpen(false)}
@@ -273,19 +291,19 @@ function App() {
       {/* Hero Section */}
       <section id="home" className="relative h-[100dvh] flex items-center justify-center overflow-hidden bg-[#1E3A2B]">
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 z-0">
-          <video 
+          <video
             ref={videoRef}
-            src="/videos/hero_bg.mp4" 
-            autoPlay loop muted playsInline 
+            src="/videos/hero_bg.mp4"
+            autoPlay loop muted playsInline
             className="w-full h-full object-cover opacity-80"
           ></video>
           <div className="absolute inset-0 bg-gradient-to-b from-[#1E3A2B]/80 via-[#1E3A2B]/40 to-[#FAF7F2]"></div>
         </motion.div>
-        
+
         {/* Floating Particles */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden mix-blend-screen opacity-30">
-           <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-[#D8A031] rounded-full blur-[100px] md:blur-[150px]"></div>
-           <div className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-80 md:h-80 bg-[#FAF7F2] rounded-full blur-[120px] md:blur-[180px]"></div>
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 md:w-64 md:h-64 bg-[#D8A031] rounded-full blur-[100px] md:blur-[150px]"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-80 md:h-80 bg-[#FAF7F2] rounded-full blur-[120px] md:blur-[180px]"></div>
         </div>
 
         <div className="container relative z-10 px-4 md:px-8 text-center pt-20">
@@ -299,7 +317,7 @@ function App() {
               100% Naturally Cultivated
             </span>
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-[1.1] max-w-5xl text-shadow-lg">
-              Traditional Groceries <br className="hidden md:block"/>
+              Traditional Groceries <br className="hidden md:block" />
               <span className="text-[#F5E9D7] italic">From Nature</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl mb-8 md:mb-12 font-light px-4">
@@ -321,16 +339,16 @@ function App() {
       <section id="products" className="py-20 md:py-32 bg-[#F5E9D7] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#D8A031] rounded-full mix-blend-multiply filter blur-[100px] opacity-20"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#1E3A2B] rounded-full mix-blend-multiply filter blur-[120px] opacity-10"></div>
-        
+
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-12 md:mb-20">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }}
               className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#1E3A2B] mb-4 md:mb-6"
             >
               Our Natural Products
             </motion.h2>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="text-[#5A3E2B] text-base md:text-lg"
             >
@@ -350,10 +368,10 @@ function App() {
               >
                 <TiltCard onClick={() => setSelectedProduct(product)} className="glass-card rounded-3xl overflow-hidden group bg-white/60">
                   <div className="relative h-56 md:h-64 overflow-hidden">
-                    <img 
-                      src={product.img} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    <img
+                      src={product.img}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur text-[#1E3A2B] text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
                       100% Natural
@@ -362,13 +380,13 @@ function App() {
                   <div className="p-6 md:p-8 flex flex-col h-[calc(100%-14rem)] md:h-[calc(100%-16rem)]">
                     <h3 className="text-2xl md:text-3xl font-serif text-[#1E3A2B] mb-2 leading-tight">{product.name}</h3>
                     <p className="text-[#5A3E2B]/80 text-sm md:text-base mb-6 flex-1 line-clamp-2">{product.shortDesc}</p>
-                    
+
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#1E3A2B]/10">
                       <div className="flex items-baseline gap-1">
                         <span className="text-xl md:text-2xl font-bold text-[#1E3A2B]">₹{product.price}</span>
                         <span className="text-sm text-[#5A3E2B]">{product.unit}</span>
                       </div>
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
                         className="w-12 h-12 rounded-full bg-[#1E3A2B] text-[#D8A031] flex items-center justify-center hover:bg-[#D8A031] hover:text-[#1E3A2B] transition-colors shadow-lg"
                       >
@@ -387,27 +405,27 @@ function App() {
       <AnimatePresence>
         {selectedProduct && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 bg-[#1E3A2B]/80 backdrop-blur-md z-[100]"
               onClick={() => setSelectedProduct(null)}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 50 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[#FAF7F2] rounded-3xl z-[101] shadow-2xl flex flex-col md:flex-row"
             >
-              <button 
+              <button
                 onClick={() => setSelectedProduct(null)}
                 className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/50 backdrop-blur rounded-full flex items-center justify-center text-[#1E3A2B] hover:bg-white transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
-              
+
               <div className="w-full md:w-1/2 h-64 md:h-auto relative">
                 <img src={selectedProduct.img} alt={selectedProduct.name} className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-[#FAF7F2] to-transparent md:hidden"></div>
               </div>
-              
+
               <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col">
                 <span className="text-[#D8A031] font-bold tracking-wider text-sm mb-2 uppercase">Premium Quality</span>
                 <h2 className="text-3xl md:text-5xl font-serif text-[#1E3A2B] mb-4 leading-tight">{selectedProduct.name}</h2>
@@ -419,12 +437,12 @@ function App() {
                   {selectedProduct.desc}
                 </p>
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]"/> Organic</div>
-                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]"/> Chemical Free</div>
-                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]"/> Farm Fresh</div>
-                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]"/> Non-GMO</div>
+                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]" /> Organic</div>
+                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]" /> Chemical Free</div>
+                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]" /> Farm Fresh</div>
+                  <div className="flex items-center gap-2 text-[#1E3A2B]"><CheckCircle className="w-5 h-5 text-[#D8A031]" /> Non-GMO</div>
                 </div>
-                <button 
+                <button
                   onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); setIsCartOpen(true); }}
                   className="w-full py-4 rounded-xl bg-[#1E3A2B] text-white font-medium text-lg hover:bg-[#D8A031] hover:text-[#1E3A2B] transition-colors flex items-center justify-center gap-3 shadow-xl"
                 >
@@ -440,12 +458,12 @@ function App() {
       <AnimatePresence>
         {isCartOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 bg-[#1E3A2B]/60 backdrop-blur-sm z-[110]"
               onClick={() => setIsCartOpen(false)}
             />
-            <motion.div 
+            <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed top-0 right-0 h-full w-full max-w-md bg-[#FAF7F2] shadow-2xl z-[120] flex flex-col"
@@ -478,9 +496,9 @@ function App() {
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center gap-3 bg-[#FAF7F2] rounded-lg px-2 py-1">
-                            <button onClick={() => updateQty(item.id, -1)} className="p-1 hover:text-[#D8A031]"><Minus className="w-4 h-4"/></button>
+                            <button onClick={() => updateQty(item.id, -1)} className="p-1 hover:text-[#D8A031]"><Minus className="w-4 h-4" /></button>
                             <span className="font-bold w-4 text-center">{item.qty}</span>
-                            <button onClick={() => updateQty(item.id, 1)} className="p-1 hover:text-[#D8A031]"><Plus className="w-4 h-4"/></button>
+                            <button onClick={() => updateQty(item.id, 1)} className="p-1 hover:text-[#D8A031]"><Plus className="w-4 h-4" /></button>
                           </div>
                           <button onClick={() => removeFromCart(item.id)} className="text-red-400 hover:text-red-600">
                             <XCircle className="w-5 h-5" />
@@ -512,12 +530,12 @@ function App() {
       <AnimatePresence>
         {isOrdersOpen && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 bg-[#1E3A2B]/60 backdrop-blur-sm z-[110]"
               onClick={() => setIsOrdersOpen(false)}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#FAF7F2] rounded-3xl z-[120] p-8 shadow-2xl text-center"
             >
@@ -548,7 +566,7 @@ function App() {
                 Purely Natural. Purely Traditional. Bringing the best of Indian organic farming to your kitchen.
               </p>
             </div>
-            
+
             <div>
               <h4 className="text-white font-serif text-xl mb-6">Quick Links</h4>
               <ul className="flex flex-col gap-4 text-white/70 text-sm">
@@ -568,7 +586,7 @@ function App() {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between text-white/40 text-sm gap-4">
             <p>© 2026 Amruteswari Satvik Foods. All rights reserved.</p>
             <div className="flex gap-6">
