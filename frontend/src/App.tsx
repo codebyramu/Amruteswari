@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Leaf, Menu, X, ShoppingCart, CheckCircle, Heart, Sprout, Maximize, Volume2, VolumeX, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
+import { Leaf, Menu, X, ShoppingCart, CheckCircle, Maximize, Volume2, VolumeX, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
 
 const products = [
   { id: 1, name: 'Premium Sona Masuri Rice', shortDesc: 'Sona Masuri, Basmati & more', desc: 'Aged for 12 months, unpolished and organically grown without pesticides. Perfect for daily meals and traditional Indian recipes. Contains high fiber and essential nutrients.', price: 180, unit: '/ kg', img: '/images/rice_img_1778906211414.png' },
