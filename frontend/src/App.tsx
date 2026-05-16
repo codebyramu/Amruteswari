@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValue } from 'framer-motion';
-import { Leaf, Menu, X, ShoppingCart, CheckCircle, Heart, Star, Sprout, Maximize, Volume2, VolumeX, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { Leaf, Menu, X, ShoppingCart, CheckCircle, Heart, Sprout, Maximize, Volume2, VolumeX, XCircle, Plus, Minus, Package, ArrowRight, Info } from 'lucide-react';
 
 const products = [
   { id: 1, name: 'Premium Sona Masuri Rice', shortDesc: 'Sona Masuri, Basmati & more', desc: 'Aged for 12 months, unpolished and organically grown without pesticides. Perfect for daily meals and traditional Indian recipes. Contains high fiber and essential nutrients.', price: 180, unit: '/ kg', img: '/images/rice_img_1778906211414.png' },
@@ -9,19 +9,6 @@ const products = [
   { id: 4, name: 'Stone Ground Chilli Powder', shortDesc: 'Sun-dried, traditional stone ground', desc: 'Authentic Guntur Milagai powder. Sun-dried and stone ground to preserve natural essential oils and traditional heat. No artificial colors added.', price: 160, unit: '/ 250g', img: '/images/chilli_img_1778906277998.png' },
   { id: 5, name: 'Whole Premium Cashews', shortDesc: 'Handpicked, whole cashew nuts', desc: 'W320 grade premium Kaju. Handpicked from traditional farms, completely natural without any chemical processing or artificial bleaching.', price: 350, unit: '/ 250g', img: '/images/rice_img_1778906211414.png' },
   { id: 6, name: 'Unpolished Toor Dal', shortDesc: 'Unpolished, rich in protein', desc: 'Rich in plant-based protein and natural dietary fiber. Sourced directly from our traditional farmers and left unpolished to retain maximum nutrition.', price: 190, unit: '/ kg', img: '/images/turmeric_img_1778906262796.png' }
-];
-
-const features = [
-  { icon: <Leaf className="w-8 h-8 text-[#D8A031]" />, title: 'Farm Fresh', desc: 'Sourced directly from our own farms.' },
-  { icon: <Sprout className="w-8 h-8 text-[#D8A031]" />, title: 'Naturally Grown', desc: 'No synthetic fertilizers or pesticides used.' },
-  { icon: <CheckCircle className="w-8 h-8 text-[#D8A031]" />, title: 'Traditional Quality', desc: 'Processed using ancient Indian techniques.' },
-  { icon: <Heart className="w-8 h-8 text-[#D8A031]" />, title: 'Healthy Lifestyle', desc: 'Promotes well-being and natural vitality.' }
-];
-
-const testimonials = [
-  { name: 'Aarti Sharma', review: 'The cold pressed oil has brought back the authentic taste of my grandmother\'s cooking. Highly recommended!' },
-  { name: 'Ramesh Iyer', review: 'Finally found pure, unpolished dal. You can immediately tell the difference in aroma and texture.' },
-  { name: 'Priya Desai', review: 'Amruteswari Satvik Foods provides the best turmeric powder. Truly premium and completely natural.' }
 ];
 
 // --- Custom Cursor Component ---
